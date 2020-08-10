@@ -4,9 +4,13 @@ import { AppService } from './app.service';
 import { PostService } from './post/post.service';
 import { PostModule } from './post/post.module';
 import { MongooseModule } from '@nestjs/mongoose';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'front'),
+    }),
     PostModule,
     PostModule,
     MongooseModule.forRoot(
