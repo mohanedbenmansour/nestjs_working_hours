@@ -1,56 +1,58 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
-
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { User } from './interfaces/user.interface';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { LoginUserDto } from '../users/dto/login-user.dto';
+import { UsersService } from '../users/users.service';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel('User') private userModel: Model<User>,
+    private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
-  async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { name, email, password } = authCredentialsDto;
+  async validateUserByPassword(loginAttempt: LoginUserDto) {
+    // This will be used for the initial login
+    let userToAttempt = await this.usersService.findOneByEmail(
+      loginAttempt.email,
+    );
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    return new Promise(resolve => {
+      // Check the supplied password against the hash stored for this email address
+      userToAttempt.checkPassword(loginAttempt.password, (err, isMatch) => {
+        if (err) throw new UnauthorizedException();
 
-    const user = new this.userModel({ name, email, password: hashedPassword });
+        if (isMatch) {
+          // If there is a successful match, generate a JWT for the user
+          resolve(this.createJwtPayload(userToAttempt));
+        } else {
+          throw new UnauthorizedException();
+        }
+      });
+    });
+  }
 
-    try {
-      await user.save();
-    } catch (error) {
-      if (error.code === 11000) {
-        throw new ConflictException('User already exists');
-      }
-      throw error;
+  async validateUserByJwt(payload: JwtPayload) {
+    // This will be used when the user has already logged in and has a JWT
+    let user = await this.usersService.findOneByEmail(payload.email);
+
+    if (user) {
+      return this.createJwtPayload(user);
+    } else {
+      throw new UnauthorizedException();
     }
   }
 
-  async signIn(user: User) {
-    const payload = { name: user.name, email: user.email, sub: user._id };
-    return {
-      accessToken: this.jwtService.sign(payload),
+  createJwtPayload(user) {
+    let data: JwtPayload = {
+      email: user.email,
     };
-  }
 
-  async validateUser(email: string, pass: string): Promise<User> {
-    const user = await this.userModel.findOne({ email });
+    let jwt = this.jwtService.sign(data);
 
-    if (!user) {
-      return null;
-    }
-
-    const valid = await bcrypt.compare(pass, user.password);
-
-    if (valid) {
-      return user;
-    }
-
-    return null;
+    return {
+      expiresIn: 3600,
+      token: jwt,
+    };
   }
 }

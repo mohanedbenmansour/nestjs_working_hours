@@ -7,9 +7,11 @@ import {
   Param,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 
 import { PostService } from './post.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('post')
 export class PostController {
@@ -23,6 +25,7 @@ export class PostController {
   }
 
   @Get()
+  //@UseGuards(AuthGuard())
   async getAllPosts() {
     const products = await this.postService.getPosts();
     return products;
@@ -32,16 +35,13 @@ export class PostController {
   getProduct(@Param('id') postId: string) {
     return this.postService.getSinglePost(postId);
   }
-  /*
-  @Patch(':id')
-  async updateProduct(
-    @Param('id') postId: string,
-    @Body('name') name: string,
-    @Body('email') email: string,
-  ) {
-    await this.postService.updatePost(postId, name, email);
-    return null;
-  }*/
+  @Get('test')
+  @UseGuards(AuthGuard())
+  testAuthRoute() {
+    return {
+      message: 'You did it!',
+    };
+  }
 
   @Delete(':id')
   async removePost(@Param('id') postId: string) {
