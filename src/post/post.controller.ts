@@ -35,13 +35,6 @@ export class PostController {
   getProduct(@Param('id') postId: string) {
     return this.postService.getSinglePost(postId);
   }
-  @Get('test')
-  @UseGuards(AuthGuard())
-  testAuthRoute() {
-    return {
-      message: 'You did it!',
-    };
-  }
 
   @Delete(':id')
   async removePost(@Param('id') postId: string) {
