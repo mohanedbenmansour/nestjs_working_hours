@@ -1097,10 +1097,10 @@ class PostService {
         this.http = http;
     }
     createPost(post) {
-        return this.http.post('http://localhost:3000/post', post);
+        return this.http.post('post', post);
     }
     getPosts() {
-        return this.http.get('http://localhost:3000/post');
+        return this.http.get('post');
     }
 }
 PostService.ɵfac = function PostService_Factory(t) { return new (t || PostService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"])); };
@@ -1142,13 +1142,13 @@ class UserService {
         this.noAuthHeader = { headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]({ NoAuth: 'True' }) };
     }
     createUser(user) {
-        return this.http.post('http://localhost:3000/auth/signup', user);
+        return this.http.post('auth/signup', user);
     }
     login(authCredentials) {
-        return this.http.post('http://localhost:3000/auth/login', authCredentials, this.noAuthHeader);
+        return this.http.post('auth/login', authCredentials, this.noAuthHeader);
     }
     getUserProfile() {
-        return this.http.get('http://localhost:3000/getuser');
+        return this.http.get('getuser');
     }
     //token field
     setToken(token) {
