@@ -2303,12 +2303,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(UserService, [{
         key: "createUser",
         value: function createUser(user) {
-          return this.http.post('http://localhost:3000/auth/signup', user);
+          return this.http.post('auth/signup', user);
         }
       }, {
         key: "login",
         value: function login(authCredentials) {
-          return this.http.post('http://localhost:3000/auth/login', authCredentials, this.noAuthHeader);
+          return this.http.post('auth/login', authCredentials, this.noAuthHeader);
         }
       }, {
         key: "getUserProfile",

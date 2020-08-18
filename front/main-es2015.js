@@ -1185,10 +1185,10 @@ class UserService {
         this.noAuthHeader = { headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]({ NoAuth: 'True' }) };
     }
     createUser(user) {
-        return this.http.post('http://localhost:3000/auth/signup', user);
+        return this.http.post('auth/signup', user);
     }
     login(authCredentials) {
-        return this.http.post('http://localhost:3000/auth/login', authCredentials, this.noAuthHeader);
+        return this.http.post('auth/login', authCredentials, this.noAuthHeader);
     }
     getUserProfile() {
         return this.http.get('getuser');
