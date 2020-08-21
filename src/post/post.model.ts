@@ -2,10 +2,7 @@ import * as mongoose from 'mongoose';
 
 const childSchema = new mongoose.Schema({
   day: { type: String, required: true },
-  start: String,
-  end: String,
-  start2: String,
-  end2: String,
+  working_hours: [String],
 });
 
 export const postSchema = new mongoose.Schema({
